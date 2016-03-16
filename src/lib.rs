@@ -369,6 +369,29 @@ impl Api {
         self.send_request("sendVideo", params, RequestType::Multipart(path_file))
     }
 
+    /// Corresponds to the `getFile` method of the API.
+    pub fn get_file(&self, file_id: &str) -> Result<types::File> {
+        // Prepare parameters
+        let mut params = Params::new();
+        params.add_get("file_id", file_id);
+
+        // Execute request
+        self.send_request("getFile", params, RequestType::Post)
+    }
+
+    /// Return the url associated with a given path.
+    pub fn get_file_url(&self, file_path: &str) -> String {
+        let mut url = self.url.clone();
+        url.path_mut().map(|path| {         // if theres a path: Change it
+            path.insert(0, "file".into());
+            path.last_mut().map(|last| {    // if its not empty: Change last...
+                *last = file_path.into()    // ... into file path
+            })
+        });
+
+        url.serialize()
+    }
+
     /// Corresponds to the `setWebhook` method of the API.
     ///
     /// **Note:**
